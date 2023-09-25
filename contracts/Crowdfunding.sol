@@ -18,6 +18,8 @@ contract Crowdfunding {
 
     uint public totalCampaigns = 0;
 
+    event Deadlinelogged(uint indexed campaignIndex, uint deadline);
+
     function createCampaign(
         address _owner,
         string memory _title,
@@ -27,11 +29,7 @@ contract Crowdfunding {
         uint _deadline
     ) public returns (uint) {
         Campaign storage campaign = campaigns[totalCampaigns];
-
-        require(
-            _deadline < block.timestamp,
-            "Deadline should be a data in future"
-        );
+        emit Deadlinelogged(totalCampaigns, _deadline);
 
         campaign.owner = _owner;
         campaign.title = _title;
@@ -46,7 +44,7 @@ contract Crowdfunding {
         return totalCampaigns - 1;
     }
 
-    function getAllCampaigns() public returns (Campaign[] memory) {
+    function getAllCampaigns() public view returns (Campaign[] memory) {
         //creating empty array  with total number of campaign
         Campaign[] memory allCampaign = new Campaign[](totalCampaigns);
 
@@ -74,7 +72,7 @@ contract Crowdfunding {
 
     function getAllDonators(
         uint256 _campaignId
-    ) public returns (address[] memory, uint[] memory) {
+    ) public view returns (address[] memory, uint[] memory) {
         Campaign storage campaign = campaigns[_campaignId];
 
         return (campaign.donators, campaign.donations);
